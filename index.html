@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>大学英语1期中考试成绩查询系统</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            color: #333;
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .container {
+            max-width: 800px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(to right, #2575fc, #6a11cb);
+            color: white;
+            padding: 25px 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 5px;
+        }
+        
+        .header p {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+        
+        .content {
+            padding: 30px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #444;
+        }
+        
+        input {
+            width: 100%;
+            padding: 14px;
+            border: 2px solid #e1e5ee;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+        
+        input:focus {
+            border-color: #2575fc;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(37, 117, 252, 0.2);
+        }
+        
+        button {
+            background: linear-gradient(to right, #2575fc, #6a11cb);
+            color: white;
+            border: none;
+            padding: 14px 20px;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.3s;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(37, 117, 252, 0.4);
+        }
+        
+        .result {
+            margin-top: 30px;
+            display: none;
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+        
+        .result-header {
+            text-align: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #e9ecef;
+        }
+        
+        .result-header h2 {
+            color: #2575fc;
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+        
+        .student-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .info-item {
+            flex: 1;
+            min-width: 150px;
+            margin: 10px;
+        }
+        
+        .info-label {
+            font-weight: 600;
+            color: #6c757d;
+            margin-bottom: 5px;
+        }
+        
+        .info-value {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .score-breakdown {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 25px;
+            flex-wrap: wrap;
+        }
+        
+        .score-card {
+            flex: 1;
+            min-width: 150px;
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 10px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+        
+        .score-card h3 {
+            font-size: 16px;
+            margin-bottom: 10px;
+            color: #6c757d;
+        }
+        
+        .score-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: #2575fc;
+        }
+        
+        .score-total {
+            font-size: 14px;
+            color: #6c757d;
+        }
+        
+        .grade {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: 600;
+            margin-top: 5px;
+        }
+        
+        .grade-excellent {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+        
+        .grade-good {
+            background: #e3f2fd;
+            color: #1565c0;
+        }
+        
+        .grade-medium {
+            background: #fff3e0;
+            color: #ef6c00;
+        }
+        
+        .grade-pass {
+            background: #e8eaf6;
+            color: #3949ab;
+        }
+        
+        .grade-fail {
+            background: #ffebee;
+            color: #c62828;
+        }
+        
+        .error-message {
+            color: #e53935;
+            text-align: center;
+            margin-top: 15px;
+            padding: 10px;
+            background: #ffebee;
+            border-radius: 8px;
+            display: none;
+        }
+        
+        @media (max-width: 600px) {
+            .container {
+                margin: 10px;
+            }
+            
+            .header h1 {
+                font-size: 24px;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+            
+            .student-info, .score-breakdown {
+                flex-direction: column;
+            }
+            
+            .info-item, .score-card {
+                margin: 10px 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>大学英语1期中考试成绩查询</h1>
+            <p>A13班 2025-2026学年第一学期</p>
+        </div>
+        
+        <div class="content">
+            <div class="form-group">
+                <label for="studentName">姓名</label>
+                <input type="text" id="studentName" placeholder="请输入您的姓名">
+            </div>
+            
+            <div class="form-group">
+                <label for="studentId">学号</label>
+                <input type="text" id="studentId" placeholder="请输入您的学号">
+            </div>
+            
+            <button id="queryBtn">查询成绩</button>
+            
+            <div class="error-message" id="errorMsg">
+                未找到匹配的学生信息，请检查姓名和学号是否正确。
+            </div>
+            
+            <div class="result" id="result">
+                <div class="result-header">
+                    <h2>成绩查询结果</h2>
+                    <p>大学英语1期中考试</p>
+                </div>
+                
+                <div class="student-info">
+                    <div class="info-item">
+                        <div class="info-label">姓名</div>
+                        <div class="info-value" id="resultName">-</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">学号</div>
+                        <div class="info-value" id="resultId">-</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">教学班</div>
+                        <div class="info-value" id="resultClass">-</div>
+                    </div>
+                </div>
+                
+                <div class="score-breakdown">
+                    <div class="score-card">
+                        <h3>总分</h3>
+                        <div class="score-value" id="totalScore">-</div>
+                        <div class="score-total">满分: 100</div>
+                        <div class="grade" id="gradeLevel">-</div>
+                    </div>
+                    
+                    <div class="score-card">
+                        <h3>客观题得分</h3>
+                        <div class="score-value" id="objectiveScore">-</div>
+                        <div class="score-total">满分: 65</div>
+                    </div>
+                    
+                    <div class="score-card">
+                        <h3>主观题得分</h3>
+                        <div class="score-value" id="subjectiveScore">-</div>
+                        <div class="score-total">满分: 35</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 学生数据 - 从提供的Excel文件中提取
+        const studentData = [
+            { id: "202505040103", name: "孙锦浩", class: "A13", total: 83.0, grade: "良好", objective: 65.0, subjective: 18.0 },
+            { id: "202505040115", name: "赵瑞", class: "A13", total: 77.0, grade: "中等", objective: 56.0, subjective: 21.0 },
+            { id: "202505040126", name: "刘姝妍", class: "A13", total: 77.0, grade: "中等", objective: 60.0, subjective: 17.0 },
+            { id: "202504060231", name: "罗博", class: "A13", total: 75.0, grade: "中等", objective: 61.0, subjective: 14.0 },
+            { id: "202504050135", name: "解宇博", class: "A13", total: 74.5, grade: "中等", objective: 59.5, subjective: 15.0 },
+            { id: "202504050139", name: "赵琪颖", class: "A13", total: 73.5, grade: "中等", objective: 50.5, subjective: 23.0 },
+            { id: "202504060219", name: "侯景文", class: "A13", total: 68.5, grade: "及格", objective: 50.5, subjective: 18.0 },
+            { id: "202505040116", name: "金璐", class: "A13", total: 67.0, grade: "及格", objective: 45.0, subjective: 22.0 },
+            { id: "202507010105", name: "黄思杰", class: "A13", total: 63.5, grade: "及格", objective: 41.5, subjective: 22.0 },
+            { id: "202507010115", name: "张顗晟", class: "A13", total: 63.5, grade: "及格", objective: 45.5, subjective: 18.0 },
+            { id: "202505040119", name: "常恩彤", class: "A13", total: 63.0, grade: "及格", objective: 48.0, subjective: 15.0 },
+            { id: "202504060202", name: "梁沛", class: "A13", total: 62.0, grade: "及格", objective: 47.0, subjective: 15.0 },
+            { id: "202504050120", name: "王楚宁", class: "A13", total: 61.5, grade: "及格", objective: 46.5, subjective: 15.0 },
+            { id: "202504050136", name: "贾唯唯", class: "A13", total: 60.0, grade: "及格", objective: 43.0, subjective: 17.0 },
+            { id: "202504060229", name: "刘子恒", class: "A13", total: 60.0, grade: "及格", objective: 47.0, subjective: 13.0 },
+            { id: "202504060209", name: "邢博涵", class: "A13", total: 59.5, grade: "不及格", objective: 45.5, subjective: 14.0 },
+            { id: "202504060225", name: "张皓焱", class: "A13", total: 59.5, grade: "不及格", objective: 45.5, subjective: 14.0 },
+            { id: "202504060228", name: "张泰格", class: "A13", total: 59.5, grade: "不及格", objective: 48.5, subjective: 11.0 },
+            { id: "202504060232", name: "张爱峰", class: "A13", total: 59.0, grade: "不及格", objective: 43.0, subjective: 16.0 },
+            { id: "202504060230", name: "苑恩豪", class: "A13", total: 58.0, grade: "不及格", objective: 44.0, subjective: 14.0 },
+            { id: "202504050108", name: "陈晨", class: "A13", total: 57.0, grade: "不及格", objective: 34.0, subjective: 23.0 },
+            { id: "202504060213", name: "徐竞昭", class: "A13", total: 57.0, grade: "不及格", objective: 42.0, subjective: 15.0 },
+            { id: "202504050122", name: "章艺涵", class: "A13", total: 56.5, grade: "不及格", objective: 40.5, subjective: 16.0 },
+            { id: "202505040111", name: "高山景行", class: "A13", total: 56.0, grade: "不及格", objective: 44.0, subjective: 12.0 },
+            { id: "202507010142", name: "邓婷婷", class: "A13", total: 56.0, grade: "不及格", objective: 39.0, subjective: 17.0 },
+            { id: "202505040129", name: "方佳芮", class: "A13", total: 55.0, grade: "不及格", objective: 40.0, subjective: 15.0 },
+            { id: "202507010113", name: "罗海峰", class: "A13", total: 55.0, grade: "不及格", objective: 40.0, subjective: 15.0 },
+            { id: "202504050112", name: "庄雨鑫", class: "A13", total: 54.0, grade: "不及格", objective: 43.0, subjective: 11.0 },
+            { id: "202505040125", name: "贾博仪", class: "A13", total: 54.0, grade: "不及格", objective: 37.0, subjective: 17.0 },
+            { id: "202504060233", name: "李光雨", class: "A13", total: 53.5, grade: "不及格", objective: 38.5, subjective: 15.0 },
+            { id: "202507010130", name: "阎翰森", class: "A13", total: 53.5, grade: "不及格", objective: 40.5, subjective: 13.0 },
+            { id: "202507040120", name: "吴铮", class: "A13", total: 52.5, grade: "不及格", objective: 46.5, subjective: 6.0 },
+            { id: "202504060207", name: "张译文", class: "A13", total: 51.5, grade: "不及格", objective: 35.5, subjective: 16.0 },
+            { id: "202505040138", name: "刘怡秀", class: "A13", total: 51.5, grade: "不及格", objective: 39.5, subjective: 12.0 },
+            { id: "202505040133", name: "朱芮涵", class: "A13", total: 50.0, grade: "不及格", objective: 38.0, subjective: 12.0 },
+            { id: "202504050104", name: "扈星灏", class: "A13", total: 49.5, grade: "不及格", objective: 36.5, subjective: 13.0 },
+            { id: "202504050140", name: "袁梦杰", class: "A13", total: 49.5, grade: "不及格", objective: 38.5, subjective: 11.0 },
+            { id: "202507040117", name: "涂景程", class: "A13", total: 49.0, grade: "不及格", objective: 37.0, subjective: 12.0 },
+            { id: "202507040118", name: "张舒扬", class: "A13", total: 48.0, grade: "不及格", objective: 32.0, subjective: 16.0 },
+            { id: "202504050137", name: "张潇", class: "A13", total: 47.5, grade: "不及格", objective: 33.5, subjective: 14.0 },
+            { id: "202504060201", name: "韩紫艳", class: "A13", total: 46.0, grade: "不及格", objective: 32.0, subjective: 14.0 },
+            { id: "202505040141", name: "吴宗熹", class: "A13", total: 44.5, grade: "不及格", objective: 30.5, subjective: 14.0 },
+            { id: "202504060227", name: "曹茂林", class: "A13", total: 37.5, grade: "不及格", objective: 26.5, subjective: 11.0 }
+        ];
+
+        // 获取DOM元素
+        const queryBtn = document.getElementById('queryBtn');
+        const studentNameInput = document.getElementById('studentName');
+        const studentIdInput = document.getElementById('studentId');
+        const resultDiv = document.getElementById('result');
+        const errorMsg = document.getElementById('errorMsg');
+        
+        // 结果元素
+        const resultName = document.getElementById('resultName');
+        const resultId = document.getElementById('resultId');
+        const resultClass = document.getElementById('resultClass');
+        const totalScore = document.getElementById('totalScore');
+        const objectiveScore = document.getElementById('objectiveScore');
+        const subjectiveScore = document.getElementById('subjectiveScore');
+        const gradeLevel = document.getElementById('gradeLevel');
+
+        // 查询按钮点击事件
+        queryBtn.addEventListener('click', function() {
+            const name = studentNameInput.value.trim();
+            const id = studentIdInput.value.trim();
+            
+            // 清空之前的结果
+            resultDiv.style.display = 'none';
+            errorMsg.style.display = 'none';
+            
+            // 验证输入
+            if (!name || !id) {
+                showError("请输入姓名和学号");
+                return;
+            }
+            
+            // 查找学生
+            const student = studentData.find(s => 
+                s.name === name && s.id === id
+            );
+            
+            if (student) {
+                // 显示学生成绩
+                displayStudentResult(student);
+            } else {
+                showError("未找到匹配的学生信息，请检查姓名和学号是否正确。");
+            }
+        });
+
+        // 显示错误信息
+        function showError(message) {
+            errorMsg.textContent = message;
+            errorMsg.style.display = 'block';
+        }
+
+        // 显示学生成绩
+        function displayStudentResult(student) {
+            resultName.textContent = student.name;
+            resultId.textContent = student.id;
+            resultClass.textContent = student.class;
+            totalScore.textContent = student.total;
+            objectiveScore.textContent = student.objective;
+            subjectiveScore.textContent = student.subjective;
+            
+            // 设置成绩等级样式
+            gradeLevel.textContent = student.grade;
+            gradeLevel.className = 'grade';
+            
+            if (student.grade === '优秀') {
+                gradeLevel.classList.add('grade-excellent');
+            } else if (student.grade === '良好') {
+                gradeLevel.classList.add('grade-good');
+            } else if (student.grade === '中等') {
+                gradeLevel.classList.add('grade-medium');
+            } else if (student.grade === '及格') {
+                gradeLevel.classList.add('grade-pass');
+            } else {
+                gradeLevel.classList.add('grade-fail');
+            }
+            
+            // 显示结果区域
+            resultDiv.style.display = 'block';
+        }
+
+        // 按Enter键查询
+        studentNameInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                queryBtn.click();
+            }
+        });
+        
+        studentIdInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                queryBtn.click();
+            }
+        });
+    </script>
+</body>
+</html>
